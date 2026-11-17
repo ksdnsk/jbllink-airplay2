@@ -27,18 +27,15 @@ From a Windows PC:
 
 ## Autostart
 
-The speaker's rootfs (/) is read-only (UBIFS) by default.
+The speaker's rootfs (/) is read-only (UBIFS). On this device
+`mount -o remount,rw /` is write-protected, so true OS-level autostart
+(systemd units in /etc) is NOT possible without modifying the rootfs image.
 
-Option A: True OS-level autostart (if you can remount rootfs rw).
-On this device mount -o remount,rw / may work:
-
+Option A: True OS-level autostart (only if your device allows rw remount):
     sh enable-autostart.sh
+If remount fails, it falls back to Option B.
 
-This copies systemd units to /etc/systemd/system and enables them.
-If remount fails (write-protected), it falls back to Option B.
-
-Option B: Manual / PC helper (always works).
-
+Option B: Manual / PC helper (always works, recommended):
 1. On the speaker (one command after reboot): sh /data/start-all.sh
 2. From a PC (cross-platform, run after reboot): ./start-airplay.sh or start-airplay.ps1
 

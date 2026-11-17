@@ -7,9 +7,7 @@ built on a Debian 9 LXC and deployed to the speaker. AirPlay-only (no YTM).
 
 On the speaker (as root, with network access):
 
-```sh
-wget -qO- https://raw.githubusercontent.com/ksdnsk/jbllink-airplay2/master/install.sh | sh
-```
+    wget -qO- https://raw.githubusercontent.com/ksdnsk/jbllink-airplay2/master/install.sh | sh
 
 This downloads the binary bundle (33 MB), writes configs, mounts the D-Bus policy,
 and starts AirPlay2 as **"JBL Link Music"**.
@@ -17,23 +15,28 @@ and starts AirPlay2 as **"JBL Link Music"**.
 ## Manual start after reboot
 
 On the speaker:
-```sh
-sh /data/start-all.sh
-```
+    sh /data/start-all.sh
 
-From a Windows PC (auto-start via ADB + SSH):
-```powershell
-.\start-airplay.ps1
-```
+From a Linux/macOS PC:
+    ./start-airplay.sh [IP] [SSH_KEY]
 
-(SSH must be up first: `sh /data/jbl-ssh/service.sh start` via ADB, or use the script above.)
+From a Windows PC:
+    powershell -File start-airplay.ps1 [-IP ...] [-KeyPath ...]
 
-## Autostart note
+(SSH must be up first: sh /data/jbl-ssh/service.sh start via ADB, or use the PC helper.)
 
-The speaker's rootfs (`/`) is read-only (UBIFS), so true OS-level autostart
+## Autostart
+
+The speaker's rootfs (/) is read-only (UBIFS), so true OS-level autostart
 (systemd units in /etc) is not possible without modifying the rootfs image.
-Units are provided in `systemd/` for reference; install them only if you
-remount rootfs rw. Otherwise use `/data/start-all.sh` or the PC helper script.
+Units are provided in systemd/ for reference.
+
+Practical autostart options:
+
+1. On the speaker (manual, one command after reboot): sh /data/start-all.sh
+2. From a PC (cross-platform helper, run after reboot): ./start-airplay.sh or start-airplay.ps1
+
+Both helpers connect via ADB, start SSH, then run /data/start-all.sh on the speaker.
 
 ## What works
 
@@ -44,22 +47,21 @@ remount rootfs rw. Otherwise use `/data/start-all.sh` or the PC helper script.
 
 ## Layout on the speaker
 
-```
-/bkupgrade/airplay2/        # 131 MB volume (data is only 17 MB)
-  shairport-sync            # AirPlay 1+2 server
-  avahi-daemon              # mDNS (musl static)
-  nqptp                     # PTP timing for AirPlay 2
-  *.so                      # bundled runtime libs
-  shairport-sync.conf
-  start-airplay.sh
-  systemd/*.service         # reference units (rootfs is read-only)
-/data/start-all.sh          # start AirPlay after reboot
-/data/avahi/                # avahi config + dbus policy
-```
+    /bkupgrade/airplay2/        # 131 MB volume (data is only 17 MB)
+      shairport-sync            # AirPlay 1+2 server
+      avahi-daemon              # mDNS (musl static)
+      nqptp                     # PTP timing for AirPlay 2
+      *.so                      # bundled runtime libs
+      shairport-sync.conf
+      start-airplay.sh
+      systemd/*.service         # reference units (rootfs is read-only)
+    /data/start-all.sh          # start AirPlay after reboot
+    /data/avahi/                # avahi config + dbus policy
 
 ## Files in this repo
 
 - install.sh — one-command installer
+- start-airplay.sh — Linux/macOS auto-start helper
 - start-airplay.ps1 — Windows auto-start helper
 - scripts/ — start-airplay.sh, run-shair.sh
 - config/ — shairport-sync.conf, avahi-daemon.conf, avahi-dbus.conf
@@ -74,4 +76,3 @@ Release asset: https://github.com/ksdnsk/jbllink-airplay2/releases/tag/v1.0
 ## Build environment
 
 Debian 9 (stretch) LXC, cross toolchain arm-linux-gnueabihf.
-

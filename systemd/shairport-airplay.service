@@ -1,0 +1,16 @@
+[Unit]
+Description=Shairport Sync AirPlay2
+After=avahi-airplay.service nqptp.service
+Requires=nqptp.service
+
+[Service]
+Type=simple
+Environment=LD_LIBRARY_PATH=/bkupgrade/airplay2
+Environment=ALSA_CONFIG_PATH=/data/ytm/my.conf
+Environment=DBUS_SYSTEM_BUS_ADDRESS=unix:path=/var/run/dbus/system_bus_socket
+ExecStart=/bkupgrade/airplay2/shairport-sync -c /bkupgrade/airplay2/shairport-sync.conf
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

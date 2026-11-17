@@ -1,0 +1,13 @@
+[Unit]
+Description=NQPTP (AirPlay2 timing)
+After=network.target
+
+[Service]
+Type=simple
+Environment=LD_LIBRARY_PATH=/bkupgrade/airplay2
+ExecStart=/bkupgrade/airplay2/nqptp
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=YTM (YouTube Music for Alice)
+After=network.target
+
+[Service]
+Type=simple
+Environment=ALSA_CONFIG_PATH=/data/ytm/my.conf
+ExecStart=/data/ytm/bin/ytm-alice serve
+Restart=on-failure
+RestartSec=2
+StandardOutput=append:/tmp/ytm-alice.log
+StandardError=append:/tmp/ytm-alice.log
+
+[Install]
+WantedBy=multi-user.target

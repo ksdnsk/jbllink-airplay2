@@ -1,0 +1,12 @@
+[Unit]
+Description=AirPlay2 setup (dbus policy mount)
+After=network.target dbus.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'mount --bind /data/avahi/system.d /etc/dbus-1/system.d; systemctl restart dbus.service'
+ExecStop=/bin/sh -c 'umount /etc/dbus-1/system.d || true'
+
+[Install]
+WantedBy=multi-user.target

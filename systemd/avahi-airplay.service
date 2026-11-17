@@ -1,0 +1,15 @@
+[Unit]
+Description=Avahi mDNS for AirPlay2
+After=airplay-setup.service dbus.service
+Requires=airplay-setup.service
+
+[Service]
+Type=simple
+Environment=LD_LIBRARY_PATH=/bkupgrade/airplay2
+Environment=DBUS_SYSTEM_BUS_ADDRESS=unix:path=/var/run/dbus/system_bus_socket
+ExecStart=/bkupgrade/airplay2/avahi-daemon -f /data/avahi/avahi-daemon.conf --no-drop-root
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

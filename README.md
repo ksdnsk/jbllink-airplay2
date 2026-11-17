@@ -27,14 +27,20 @@ From a Windows PC:
 
 ## Autostart
 
-The speaker's rootfs (/) is read-only (UBIFS), so true OS-level autostart
-(systemd units in /etc) is not possible without modifying the rootfs image.
-Units are provided in systemd/ for reference.
+The speaker's rootfs (/) is read-only (UBIFS) by default.
 
-Practical autostart options:
+Option A: True OS-level autostart (if you can remount rootfs rw).
+On this device mount -o remount,rw / may work:
 
-1. On the speaker (manual, one command after reboot): sh /data/start-all.sh
-2. From a PC (cross-platform helper, run after reboot): ./start-airplay.sh or start-airplay.ps1
+    sh enable-autostart.sh
+
+This copies systemd units to /etc/systemd/system and enables them.
+If remount fails (write-protected), it falls back to Option B.
+
+Option B: Manual / PC helper (always works).
+
+1. On the speaker (one command after reboot): sh /data/start-all.sh
+2. From a PC (cross-platform, run after reboot): ./start-airplay.sh or start-airplay.ps1
 
 Both helpers connect via ADB, start SSH, then run /data/start-all.sh on the speaker.
 
@@ -60,13 +66,14 @@ Both helpers connect via ADB, start SSH, then run /data/start-all.sh on the spea
 
 ## Files in this repo
 
-- install.sh — one-command installer
-- start-airplay.sh — Linux/macOS auto-start helper
-- start-airplay.ps1 — Windows auto-start helper
-- scripts/ — start-airplay.sh, run-shair.sh
-- config/ — shairport-sync.conf, avahi-daemon.conf, avahi-dbus.conf
-- systemd/ — reference unit files
-- avahi/ — dbus policy
+- install.sh - one-command installer
+- enable-autostart.sh - try to enable OS-level autostart (requires rw rootfs)
+- start-airplay.sh - Linux/macOS auto-start helper
+- start-airplay.ps1 - Windows auto-start helper
+- scripts/ - start-airplay.sh, run-shair.sh
+- config/ - shairport-sync.conf, avahi-daemon.conf, avahi-dbus.conf
+- systemd/ - reference unit files
+- avahi/ - dbus policy
 
 ## Backup
 

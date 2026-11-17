@@ -28,18 +28,30 @@ From a Windows PC:
 ## Autostart
 
 The speaker's rootfs (/) is read-only (UBIFS). On this device
-`mount -o remount,rw /` is write-protected, so true OS-level autostart
+mount -o remount,rw / is write-protected, so true OS-level autostart
 (systemd units in /etc) is NOT possible without modifying the rootfs image.
+Units are provided in systemd/ for reference.
 
-Option A: True OS-level autostart (only if your device allows rw remount):
+### Option 1: Background daemon (recommended, fully automatic)
+
+Run once on your PC. It polls for the device and auto-starts AirPlay2
+after every reboot - no manual intervention needed.
+
+- Linux/macOS: ./autostart-daemon.sh [IP] [SSH_KEY] [INTERVAL]
+- Windows: powershell -File autostart-daemon.ps1 [-IP ...] [-KeyPath ...] [-Interval 10]
+
+Leave it running in the background (tmux/screen on Linux, or as a service).
+
+### Option 2: One-shot (manual, after reboot)
+
+1. On the speaker: sh /data/start-all.sh
+2. From a PC: ./start-airplay.sh (Linux/macOS) or start-airplay.ps1 (Windows)
+
+### Option 3: True OS-level autostart (only if rootfs can be remounted rw)
+
     sh enable-autostart.sh
-If remount fails, it falls back to Option B.
 
-Option B: Manual / PC helper (always works, recommended):
-1. On the speaker (one command after reboot): sh /data/start-all.sh
-2. From a PC (cross-platform, run after reboot): ./start-airplay.sh or start-airplay.ps1
-
-Both helpers connect via ADB, start SSH, then run /data/start-all.sh on the speaker.
+On this device remount fails (write-protected), so this falls back to Option 2.
 
 ## What works
 
@@ -65,8 +77,10 @@ Both helpers connect via ADB, start SSH, then run /data/start-all.sh on the spea
 
 - install.sh - one-command installer
 - enable-autostart.sh - try to enable OS-level autostart (requires rw rootfs)
-- start-airplay.sh - Linux/macOS auto-start helper
-- start-airplay.ps1 - Windows auto-start helper
+- start-airplay.sh - Linux/macOS one-shot auto-start helper
+- start-airplay.ps1 - Windows one-shot auto-start helper
+- autostart-daemon.sh - Linux/macOS background daemon (auto-starts after reboot)
+- autostart-daemon.ps1 - Windows background daemon (auto-starts after reboot)
 - scripts/ - start-airplay.sh, run-shair.sh
 - config/ - shairport-sync.conf, avahi-daemon.conf, avahi-dbus.conf
 - systemd/ - reference unit files

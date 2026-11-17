@@ -1,3 +1,5 @@
+[Русская версия](README.ru.md)
+
 # jbllink-airplay2
 
 AirPlay 2 (multi-room) on **JBL Link Music** (MediaTek MT8516, ARMv7, Yocto),

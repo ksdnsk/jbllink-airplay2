@@ -1,5 +1,5 @@
 #!/bin/sh
-# One-command installer for AirPlay2 on JBL Link Music
+# One-command installer for AirPlay2 on JBL Link Music (AirPlay2 only)
 # Usage: wget -qO- https://raw.githubusercontent.com/ksdnsk/jbllink-airplay2/master/install.sh | sh
 set -e
 
@@ -69,26 +69,25 @@ SHAIREOF
 
 chmod +x "$BASE"/*.sh "$BASE"/shairport-sync "$BASE"/avahi-daemon "$BASE"/nqptp 2>/dev/null || true
 
+echo "==> Creating /data/start-all.sh (AirPlay2 only)"
+cat > /data/start-all.sh <<'STARTALLEOF'
+#!/bin/sh
+mount --bind /data/avahi/system.d /etc/dbus-1/system.d 2>/dev/null || true
+systemctl restart dbus.service 2>/dev/null || true
+sleep 1
+sh /bkupgrade/airplay2/start-airplay.sh
+STARTALLEOF
+chmod +x /data/start-all.sh
+
 echo "==> Mounting dbus policy"
 mount --bind /data/avahi/system.d /etc/dbus-1/system.d 2>/dev/null || true
 systemctl restart dbus.service 2>/dev/null || true
 sleep 1
 
 echo "==> Starting AirPlay2"
-# create persistent start-all.sh
-cat > /data/start-all.sh <<'STARTALLEOF'
-#!/bin/sh
-mount --bind /data/avahi/system.d /etc/dbus-1/system.d 2>/dev/null || true
-systemctl restart dbus.service 2>/dev/null || true
-sleep 1
-cd /data/ytm/bin && ./ytm-alice daemon start >/tmp/ytm-alice.log 2>&1 || true
-sleep 2
-sh /bkupgrade/airplay2/start-airplay.sh
-STARTALLEOF
-chmod +x /data/start-all.sh
 sh "$BASE/start-airplay.sh"
 
 echo ""
 echo "Done. AirPlay2 is running as 'JBL Link Music'."
-echo "For autostart after reboot, run: sh /data/start-all.sh"
+echo "After reboot: sh /data/start-all.sh"
 

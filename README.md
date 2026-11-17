@@ -1,7 +1,7 @@
 # jbllink-airplay2
 
 AirPlay 2 (multi-room) on **JBL Link Music** (MediaTek MT8516, ARMv7, Yocto),
-built on a Debian 9 LXC and deployed to the speaker.
+built on a Debian 9 LXC and deployed to the speaker. AirPlay-only (no YTM).
 
 ## One-command install
 
@@ -16,18 +16,31 @@ and starts AirPlay2 as **"JBL Link Music"**.
 
 ## Manual start after reboot
 
+On the speaker:
 ```sh
 sh /data/start-all.sh
 ```
 
-(SSH first: `sh /data/jbl-ssh/service.sh start` via ADB.)
+From a Windows PC (auto-start via ADB + SSH):
+```powershell
+.\start-airplay.ps1
+```
+
+(SSH must be up first: `sh /data/jbl-ssh/service.sh start` via ADB, or use the script above.)
+
+## Autostart note
+
+The speaker's rootfs (`/`) is read-only (UBIFS), so true OS-level autostart
+(systemd units in /etc) is not possible without modifying the rootfs image.
+Units are provided in `systemd/` for reference; install them only if you
+remount rootfs rw. Otherwise use `/data/start-all.sh` or the PC helper script.
 
 ## What works
 
 - AirPlay 1 + AirPlay 2 service visible as "JBL Link Music" on iPhone/iPad
 - Playback through the Harman DSP path (ytmout -> hmpp)
 - NQPTP + shairport-sync in AirPlay 2 mode
-- Coexists with stock Alice / YTM (YouTube Music)
+- Coexists with stock Alice
 
 ## Layout on the speaker
 
@@ -40,14 +53,15 @@ sh /data/start-all.sh
   shairport-sync.conf
   start-airplay.sh
   systemd/*.service         # reference units (rootfs is read-only)
-/data/start-all.sh          # start YTM + AirPlay after reboot
+/data/start-all.sh          # start AirPlay after reboot
 /data/avahi/                # avahi config + dbus policy
 ```
 
 ## Files in this repo
 
 - install.sh — one-command installer
-- scripts/ — start-airplay.sh, run-shair.sh, start-all.sh
+- start-airplay.ps1 — Windows auto-start helper
+- scripts/ — start-airplay.sh, run-shair.sh
 - config/ — shairport-sync.conf, avahi-daemon.conf, avahi-dbus.conf
 - systemd/ — reference unit files
 - avahi/ — dbus policy
